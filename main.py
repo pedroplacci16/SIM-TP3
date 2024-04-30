@@ -1,14 +1,28 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QVBoxLayout, QLabel, QLineEdit, QHBoxLayout, QWidget, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QVBoxLayout, QLabel, \
+    QLineEdit, QHBoxLayout, QWidget, QMessageBox, QHeaderView
+
 
 class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Ingreso de parámetros")
-        self.setGeometry(100, 100, 600, 400)  # Aumentamos el tamaño de la ventana
+        self.setWindowTitle("Montecarlo")
+        self.setGeometry(800, 100, 700, 800)  # Aumentamos el tamaño de la ventana
 
+        self.init_main_window()
+
+        # Guarda los valores iniciales de los campos de entrada
+        self.initial_values = {
+            'dias': '',
+            'ventas': '',
+            'costo_ventas': '',
+            'costo_obrero': '',
+            'filas_mostrar': ''
+        }
+
+    def init_main_window(self):
+        # Primera página
         self.tableWidget = QTableWidget(self)
-        self.tableWidget.setGeometry(20, 20, 560, 300)  # Ajustamos el tamaño de la tabla
         self.tableWidget.setColumnCount(2)
         self.tableWidget.setHorizontalHeaderLabels(["Número de obreros ausentes", "Cantidad de días"])
         self.tableWidget.setRowCount(6)
@@ -17,31 +31,34 @@ class MyWindow(QMainWindow):
             item.setFlags(item.flags() ^ 2)  # Establece la celda como solo lectura
             self.tableWidget.setItem(row, 0, item)
 
-        # Campos adicionales
-        self.dias = self.create_input_field("Número de días a simular")
-        self.ventas = self.create_input_field("Valor de ventas diarias")
-        self.costo_ventas = self.create_input_field("Costo por ventas diarias")
-        self.costo_obrero = self.create_input_field("Costo por obrero diario")
-        self.filas_mostrar = self.create_input_field("Filas a mostrar")
+        # Ajustar tamaño de las columnas para que se adapten al contenido
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
-        # Botón para guardar los valores
+        # Campos adicionales
+        self.dias, self.dias_input = self.create_input_field("Número de días a simular")
+        self.ventas, self.ventas_input = self.create_input_field("Valor de ventas diarias")
+        self.costo_ventas, self.costo_ventas_input = self.create_input_field("Costo por ventas diarias")
+        self.costo_obrero, self.costo_obrero_input = self.create_input_field("Costo por obrero diario")
+        self.filas_mostrar, self.filas_mostrar_input = self.create_input_field("Filas a mostrar")
+
+        # Botón para guardar los valores y mostrar la segunda página
         self.pushButton = QPushButton("Simular", self)
-        self.pushButton.setGeometry(250, 340, 100, 30)  # Ajustamos la posición del botón
-        self.pushButton.clicked.connect(self.on_click)
+        self.pushButton.setGeometry(350, 540, 100, 30)  # Ajustamos la posición del botón
+        self.pushButton.clicked.connect(self.show_second_page)
 
         # Layout principal
         layout = QVBoxLayout()
         layout.addWidget(self.tableWidget)
-        layout.addLayout(self.dias[0])
-        layout.addLayout(self.ventas[0])
-        layout.addLayout(self.costo_ventas[0])
-        layout.addLayout(self.costo_obrero[0])
-        layout.addLayout(self.filas_mostrar[0])
+        layout.addLayout(self.dias)
+        layout.addLayout(self.ventas)
+        layout.addLayout(self.costo_ventas)
+        layout.addLayout(self.costo_obrero)
+        layout.addLayout(self.filas_mostrar)
         layout.addWidget(self.pushButton)
 
-        central_widget = QWidget()
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
+        self.central_widget = QWidget()  # Se agrega la variable central_widget
+        self.central_widget.setLayout(layout)
+        self.setCentralWidget(self.central_widget)
 
     def create_input_field(self, text):
         layout = QHBoxLayout()
@@ -53,11 +70,41 @@ class MyWindow(QMainWindow):
 
         return layout, input_field
 
-    def on_click(self):
-        # Obtiene los valores ingresados por el usuario
-        for row in range(6):
-            cantidad_dias = self.tableWidget.item(row, 1).text()
-            print(f"Fila {row + 1}: {cantidad_dias} días")
+    def show_second_page(self):
+        # Aquí podrías procesar los valores ingresados antes de mostrar la segunda página
+        # Por ahora, simplemente pasaremos a la segunda página
+        self.init_second_page()
+
+    def init_second_page(self):
+        # Segunda página
+        self.tableWidgetSecond = QTableWidget(self)
+        self.tableWidgetSecond.setColumnCount(2)
+        self.tableWidgetSecond.setHorizontalHeaderLabels(["Columna 1", "Columna 2"])
+        self.tableWidgetSecond.setRowCount(5)
+
+        self.backButton = QPushButton("Volver", self)
+        self.backButton.setGeometry(350, 540, 100, 30)  # Ajustamos la posición del botón
+        self.backButton.clicked.connect(self.show_main_page)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.tableWidgetSecond)
+        layout.addWidget(self.backButton)
+
+        second_page_widget = QWidget()
+        second_page_widget.setLayout(layout)
+        self.setCentralWidget(second_page_widget)
+
+    def show_main_page(self):
+        self.init_main_window()
+
+    def reset_input_fields(self):
+        # Restablece los campos de entrada borrando su contenido si los objetos QLineEdit aún existen
+        self.dias_input.setText('')
+        self.ventas_input.setText('')
+        self.costo_ventas_input.setText('')
+        self.costo_obrero_input.setText('')
+        self.filas_mostrar_input.setText('')
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
