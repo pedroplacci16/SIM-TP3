@@ -11,7 +11,12 @@ class MyWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Montecarlo")
         self.setGeometry(800, 100, 700, 800)  # Aumentamos el tamaño de la ventana
-
+        self.inicial_dias = ""
+        self.inicial_ventas = "4000"
+        self.inicial_costo_ventas = "2400"
+        self.inicial_costo_obrero = "30"
+        self.inicial_filas_mostrar = ""
+        self.valores_tabla_iniciales = ["36", "38", "19", "6", "1", "0"]
         self.init_main_window()
 
         # Guarda los valores iniciales de los campos de entrada
@@ -33,6 +38,9 @@ class MyWindow(QMainWindow):
             item = QTableWidgetItem(value)
             item.setFlags(item.flags() ^ 2)  # Establece la celda como solo lectura
             self.tableWidget.setItem(row, 0, item)
+        # Restaurar los valores iniciales
+        for row, valor in enumerate(self.valores_tabla_iniciales):
+            self.tableWidget.setItem(row, 1, QTableWidgetItem(valor))
 
         # Ajustar tamaño de las columnas para que se adapten al contenido
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
@@ -43,6 +51,13 @@ class MyWindow(QMainWindow):
         self.costo_ventas, self.costo_ventas_input = self.create_input_field("Costo por ventas diarias")
         self.costo_obrero, self.costo_obrero_input = self.create_input_field("Costo por obrero diario")
         self.filas_mostrar, self.filas_mostrar_input = self.create_input_field("Filas a mostrar")
+
+        # Establecer el texto de los campos de entrada con los valores guardados
+        self.dias_input.setText(str(self.inicial_dias))
+        self.ventas_input.setText(str(self.inicial_ventas))
+        self.costo_ventas_input.setText(str(self.inicial_costo_ventas))
+        self.costo_obrero_input.setText(str(self.inicial_costo_obrero))
+        self.filas_mostrar_input.setText(str(self.inicial_filas_mostrar))
 
         # Botón para guardar los valores y mostrar la segunda página
         self.pushButton = QPushButton("Simular", self)
@@ -82,10 +97,25 @@ class MyWindow(QMainWindow):
 
     def show_second_page(self):
         dias_text = self.dias_input.text()
+        self.inicial_dias = dias_text
+
         ventas_text = self.ventas_input.text()
+        self.inicial_ventas = ventas_text
+
         costo_ventas_text = self.costo_ventas_input.text()
+        self.inicial_costo_ventas = costo_ventas_text
+
         costo_obrero_text = self.costo_obrero_input.text()
+        self.inicial_costo_obrero = costo_obrero_text
+
         filas_mostrar_text = self.filas_mostrar_input.text()
+        self.inicial_filas_mostrar = filas_mostrar_text
+
+        # Estas líneas para guardar los valores iniciales
+        self.valores_tabla_iniciales = []
+        for row in range(self.tableWidget.rowCount()):
+            self.valores_tabla_iniciales.append(self.tableWidget.item(row, 1).text())
+
 
         if dias_text.strip() == '' or ventas_text.strip() == '' or costo_ventas_text.strip() == '' \
                 or costo_obrero_text.strip() == '' or filas_mostrar_text.strip() == '':
