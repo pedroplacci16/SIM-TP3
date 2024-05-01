@@ -107,7 +107,7 @@ class MyWindow(QMainWindow):
         return data
     
     def mostrar_datos(self, dias, ventas, costo_ventas, costo_obrero, total_dias, mostrar_filas):
-        data = []
+        data = [[0]*8, [0]*8]  # Inicializamos data con dos elementos
         beneficio_acumulado = [0, 0, 0]  # Inicializamos beneficio_acumulado con tres ceros
         for i in range(dias):
             rnd = round(random(), 2)
@@ -124,12 +124,12 @@ class MyWindow(QMainWindow):
             for j in range(3):
                 beneficio[j] = ventas_dia[j] - costos_produccion_dia[j] - salario[j]
                 beneficio_acumulado[j] += beneficio[j]  # Acumulamos el beneficio
-            data.append([i+1, rnd, ausentes, nomina, ventas_dia, costos_produccion_dia, salario, beneficio_acumulado.copy()])
+            # Aca uso el modulo de i para ir alternando entre 0 y 1, entonces poder alternar entre los objetos del vector
+            data[i%2] = [i+1, rnd, ausentes, nomina, ventas_dia, costos_produccion_dia, salario, beneficio_acumulado.copy()]
             # Si ya estamos en las filas que debemos mostrar, las vamos metiendo a la tabla
             if i >= dias - mostrar_filas:
-                self.insertar_en_tabla(data[-1])
-            if len(data) > 2:  # Si el tamaño de data excede 2
-                data.pop(0)  # Eliminamos la fila más antigua
+                self.insertar_en_tabla(data[i%2])
+
             
 
 
