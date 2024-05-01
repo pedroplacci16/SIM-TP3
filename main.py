@@ -108,16 +108,29 @@ class MyWindow(QMainWindow):
 
     
     def insertar_en_tabla(self, fila):
+        # Obtiene el número de filas existentes en la tabla. ya que esta funcion puede ser llamada con filas
+        # ya insertadas en la tabla
         i = self.tableWidgetSecond.rowCount()
+        # Inserta una nueva fila en la tabla en la posición 'i'
         self.tableWidgetSecond.insertRow(i)
+        # Inicializa el índice de la columna a 0
         j = 0
+
+        # Itera sobre cada elemento en la fila de datos
         for item in fila:
+            # Verifica si el elemento es una lista
             if isinstance(item, list):
+                # Si el elemento es una lista, itera sobre cada subelemento en la lista, en caso que sea 
+                # el vector de beneficio
                 for subitem in item:
+                    # Inserta el subelemento en la tabla en la fila 'i' y la columna 'j'
                     self.tableWidgetSecond.setItem(i, j, QTableWidgetItem(str(subitem)))
+                    # Incrementa el índice de la columna
                     j += 1
             else:
+                # Si el elemento no es una lista, lo inserta directamente en la tabla en la fila 'i' y la columna 'j'
                 self.tableWidgetSecond.setItem(i, j, QTableWidgetItem(str(item)))
+                # Incrementa el índice de la columna
                 j += 1
 
     def create_input_field(self, text):
