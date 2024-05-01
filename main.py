@@ -127,9 +127,10 @@ class MyWindow(QMainWindow):
             data.append([i+1, rnd, ausentes, nomina, ventas_dia, costos_produccion_dia, salario, beneficio_acumulado.copy()])
             # Si ya estamos en las filas que debemos mostrar, las vamos metiendo a la tabla
             if i >= dias - mostrar_filas:
-                self.insertar_en_tabla(data[1])
+                self.insertar_en_tabla(data[-1])
             if len(data) > 2:  # Si el tamaño de data excede 2
                 data.pop(0)  # Eliminamos la fila más antigua
+            
 
 
     
