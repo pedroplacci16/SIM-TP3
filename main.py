@@ -141,6 +141,7 @@ class MyWindow(QMainWindow):
 
         total_dias = sum(int(self.tableWidget.item(row, 1).text()) for row in range(self.tableWidget.rowCount()))
 
+
         # Lógica para llenar la tabla
         for i in range(dias):
             # Obtener un valor aleatorio entre 0 y 1 para RND
@@ -157,30 +158,11 @@ class MyWindow(QMainWindow):
             ventas_dia = [0, 0, 0]
             costos_produccion_dia = [0, 0, 0]
 
-            if nomina[0] < 20 and nomina[1] < 20 and nomina[2] < 20:
-                ventas_dia = [0, 0, 0]
-                costos_produccion_dia = [0, 0, 0]
-            elif nomina[0] < 20 and nomina[1] >= 20 and nomina[2] >= 20:
-                ventas_dia = [0, ventas, ventas]
-                costos_produccion_dia = [0, costo_ventas, costo_ventas]
-            elif nomina[0] >= 20 and nomina[1] < 20 and nomina[2] >= 20:
-                ventas_dia = [ventas, 0, ventas]
-                costos_produccion_dia = [costo_ventas, 0, costo_ventas]
-            elif nomina[0] >= 20 and nomina[1] >= 20 and nomina[2] < 20:
-                ventas_dia = [ventas, ventas, 0]
-                costos_produccion_dia = [costo_ventas, costo_ventas, 0]
-            elif nomina[0] < 20 and nomina[1] < 20 and nomina[2] >= 20:
-                ventas_dia = [0, 0, ventas]
-                costos_produccion_dia = [0, 0, costo_ventas]
-            elif nomina[0] < 20 and nomina[1] >= 20 and nomina[2] < 20:
-                ventas_dia = [0, ventas, 0]
-                costos_produccion_dia = [0, costo_ventas, 0]
-            elif nomina[0] >= 20 and nomina[1] < 20 and nomina[2] < 20:
-                ventas_dia = [ventas, 0, 0]
-                costos_produccion_dia = [costo_ventas, 0, 0]
-            else:
-                ventas_dia = [ventas, ventas, ventas]
-                costos_produccion_dia = [costo_ventas, costo_ventas, costo_ventas]
+            #Calcula para cada nomina, si se produjeron ventas y por ende costos
+            for a in range(len(nomina)):
+                if nomina[a] >= 20:
+                    ventas_dia[a] = ventas
+                    costos_produccion_dia[a] = costo_ventas
 
             # Calcular SALARIO
             salario = [x * costo_obrero for x in [21, 22, 23]]
@@ -250,6 +232,7 @@ class MyWindow(QMainWindow):
         return ausentes
 
     def buscar(self, rnd, limites_inf, numeros_ausentes):
+        #enumerate lo que hace es que el for pueda devolver tanto el indice i, como el valor de limite_inf para ese indice
         for i, limite_inf in enumerate(limites_inf):
             if rnd < limite_inf:
                 return numeros_ausentes[i - 1]
