@@ -2,6 +2,7 @@ import sys
 from random import random
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QBrush, QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QVBoxLayout, QLabel, \
     QLineEdit, QHBoxLayout, QWidget, QMessageBox, QHeaderView
 
@@ -11,11 +12,12 @@ class MyWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Montecarlo")
         self.setGeometry(800, 100, 700, 800)  # Aumentamos el tamaño de la ventana
-        self.inicial_dias = ""
+        self.inicial_dias = "100"
         self.inicial_ventas = "4000"
         self.inicial_costo_ventas = "2400"
         self.inicial_costo_obrero = "30"
-        self.inicial_filas_mostrar = ""
+        self.inicial_filas_mostrar = "20"
+        self.inicial_fila_desde = "10"
         self.valores_tabla_iniciales = ["36", "38", "19", "6", "1", "0"]
         self.init_main_window()
 
@@ -25,7 +27,8 @@ class MyWindow(QMainWindow):
             'ventas': '',
             'costo_ventas': '',
             'costo_obrero': '',
-            'filas_mostrar': ''
+            'filas_mostrar': '',
+            'fila_desde': ''
         }
 
     def init_main_window(self):
@@ -46,11 +49,12 @@ class MyWindow(QMainWindow):
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
         # Campos adicionales
-        self.dias, self.dias_input = self.create_input_field("Número de días a simular")
-        self.ventas, self.ventas_input = self.create_input_field("Valor de ventas diarias")
-        self.costo_ventas, self.costo_ventas_input = self.create_input_field("Costo por ventas diarias")
-        self.costo_obrero, self.costo_obrero_input = self.create_input_field("Costo por obrero diario")
-        self.filas_mostrar, self.filas_mostrar_input = self.create_input_field("Filas a mostrar")
+        self.dias, self.dias_input = self.create_input_field("Número de días a simular: ")
+        self.ventas, self.ventas_input = self.create_input_field("Valor de ventas diarias: ")
+        self.costo_ventas, self.costo_ventas_input = self.create_input_field("Costo por ventas diarias: ")
+        self.costo_obrero, self.costo_obrero_input = self.create_input_field("Costo por obrero diario: ")
+        self.filas_mostrar, self.filas_mostrar_input = self.create_input_field("Filas a mostrar: ")
+        self.fila_desde, self.fila_desde_input = self.create_input_field("Mostrar desde la fila: ")
 
         # Establecer el texto de los campos de entrada con los valores guardados
         self.dias_input.setText(str(self.inicial_dias))
@@ -58,6 +62,7 @@ class MyWindow(QMainWindow):
         self.costo_ventas_input.setText(str(self.inicial_costo_ventas))
         self.costo_obrero_input.setText(str(self.inicial_costo_obrero))
         self.filas_mostrar_input.setText(str(self.inicial_filas_mostrar))
+        self.fila_desde_input.setText(str(self.inicial_fila_desde))
 
         # Botón para guardar los valores y mostrar la segunda página
         self.pushButton = QPushButton("Simular", self)
@@ -72,6 +77,7 @@ class MyWindow(QMainWindow):
         layout.addLayout(self.costo_ventas)
         layout.addLayout(self.costo_obrero)
         layout.addLayout(self.filas_mostrar)
+        layout.addLayout(self.fila_desde)
         layout.addWidget(self.pushButton)
 
         self.central_widget = QWidget()  # Se agrega la variable central_widget
@@ -84,6 +90,7 @@ class MyWindow(QMainWindow):
         self.costo_ventas = 0
         self.costo_obrero = 0
         self.filas_mostrar = 0
+        self.fila_desde = 0
 
     def calcular_datos(self, dias, ventas, costo_ventas, costo_obrero, total_dias):
         data = []
@@ -106,9 +113,13 @@ class MyWindow(QMainWindow):
             data.append([i+1, rnd, ausentes, nomina, ventas_dia, costos_produccion_dia, salario, beneficio_acumulado.copy()])
         return data
     
-    def mostrar_datos(self, dias, ventas, costo_ventas, costo_obrero, total_dias, mostrar_filas):
+    def mostrar_datos(self, dias, ventas, costo_ventas, costo_obrero, total_dias, filas_mostrar, fila_desde):
         data = [[0]*8, [0]*8]  # Inicializamos data con dos elementos
         beneficio_acumulado = [0, 0, 0]  # Inicializamos beneficio_acumulado con tres ceros
+
+        # Calcular el índice final de las filas a mostrar
+        fila_hasta = fila_desde + filas_mostrar
+
         for i in range(dias):
             rnd = round(random(), 2)
             ausentes = self.calcular_ausentes(total_dias, rnd)
@@ -124,16 +135,18 @@ class MyWindow(QMainWindow):
             for j in range(3):
                 beneficio[j] = ventas_dia[j] - costos_produccion_dia[j] - salario[j]
                 beneficio_acumulado[j] += beneficio[j]  # Acumulamos el beneficio
-            # Aca uso el modulo de i para ir alternando entre 0 y 1, entonces poder alternar entre los objetos del vector
-            data[i%2] = [i+1, rnd, ausentes, nomina, ventas_dia, costos_produccion_dia, salario, beneficio_acumulado.copy()]
-            # Si ya estamos en las filas que debemos mostrar, las vamos metiendo a la tabla
-            if i >= dias - mostrar_filas:
-                self.insertar_en_tabla(data[i%2])
 
-            
+            # Verificar si estamos dentro del rango de filas a mostrar
+            if fila_desde <= i <= fila_hasta - 1 or i == dias - 1:
+
+                # Aca uso el modulo de i para ir alternando entre 0 y 1, para poder alternar entre los objetos del vector
+                data[i % 2] = [i + 1, rnd, ausentes, nomina, ventas_dia, costos_produccion_dia, salario,
+                                   beneficio_acumulado.copy()]
+
+                self.insertar_en_tabla(data[i % 2])
 
 
-    
+
     def insertar_en_tabla(self, fila):
         # Obtiene el número de filas existentes en la tabla. ya que esta funcion puede ser llamada con filas
         # ya insertadas en la tabla
@@ -159,6 +172,7 @@ class MyWindow(QMainWindow):
                 self.tableWidgetSecond.setItem(i, j, QTableWidgetItem(str(item)))
                 # Incrementa el índice de la columna
                 j += 1
+
 
     def create_input_field(self, text):
         layout = QHBoxLayout()
@@ -186,6 +200,9 @@ class MyWindow(QMainWindow):
         filas_mostrar_text = self.filas_mostrar_input.text()
         self.inicial_filas_mostrar = filas_mostrar_text
 
+        fila_desde_text = self.fila_desde_input.text()
+        self.inicial_fila_desde = fila_desde_text
+
         # Estas líneas para guardar los valores iniciales
         self.valores_tabla_iniciales = []
         for row in range(self.tableWidget.rowCount()):
@@ -193,7 +210,7 @@ class MyWindow(QMainWindow):
 
 
         if dias_text.strip() == '' or ventas_text.strip() == '' or costo_ventas_text.strip() == '' \
-                or costo_obrero_text.strip() == '' or filas_mostrar_text.strip() == '':
+                or costo_obrero_text.strip() == '' or filas_mostrar_text.strip() == '' or fila_desde_text.strip() == '':
             QMessageBox.warning(self, 'Campos vacíos', 'Por favor, complete todos los campos.')
             return
 
@@ -202,7 +219,8 @@ class MyWindow(QMainWindow):
         costo_ventas = float(costo_ventas_text)
         costo_obrero = float(costo_obrero_text)
         filas_mostrar = int(filas_mostrar_text)
-        self.init_second_page2(dias, ventas, costo_ventas, costo_obrero, filas_mostrar)
+        fila_desde = int(fila_desde_text)
+        self.init_second_page2(dias, ventas, costo_ventas, costo_obrero, filas_mostrar, fila_desde)
 
     # def init_second_page(self, dias, ventas, costo_ventas, costo_obrero, filas_mostrar):
     #     # Segunda página
@@ -289,7 +307,7 @@ class MyWindow(QMainWindow):
 
     #     self.setCentralWidget(second_page_widget)
     
-    def init_second_page2(self, dias, ventas, costo_ventas, costo_obrero, filas_mostrar):
+    def init_second_page2(self, dias, ventas, costo_ventas, costo_obrero, filas_mostrar, fila_desde):
         self.tableWidgetSecond = QTableWidget(self)
         self.tableWidgetSecond.setColumnCount(18)
         self.tableWidgetSecond.setHorizontalHeaderLabels(
@@ -298,7 +316,7 @@ class MyWindow(QMainWindow):
             "COSTOS DE PRODUCCIÓN 22", "COSTOS DE PRODUCCIÓN 23", "SALARIO 21",
             "SALARIO 22", "SALARIO 23", "BENEFICIO 21", "BENEFICIO 22", "BENEFICIO 23"])
         total_dias = sum(int(self.tableWidget.item(row, 1).text()) for row in range(self.tableWidget.rowCount()))
-        self.mostrar_datos(dias, ventas, costo_ventas, costo_obrero, total_dias, filas_mostrar)
+        self.mostrar_datos(dias, ventas, costo_ventas, costo_obrero, total_dias, filas_mostrar, fila_desde)
         
         self.backButton = QPushButton("Volver", self)
         self.backButton.setGeometry(350, 540, 100, 30)
