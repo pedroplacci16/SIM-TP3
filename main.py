@@ -178,10 +178,6 @@ class MyWindow(QMainWindow):
     def cancel_action(self):
         self.close()
 
-    def simular_action1(self, row, column):
-        # Realizar la acción de simulación
-        self.show_second_page()  # Por ejemplo, aquí se llama a la función para mostrar la segunda página
-
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Up:
             self.focusPreviousChild()
@@ -212,9 +208,6 @@ class MyWindow(QMainWindow):
         # Realizar la acción de simulación o cerrar la ventana, dependiendo del contexto
         self.show_second_page()
 
-    def simular_action2(self):
-        # Realizar la acción de simulación o cerrar la ventana, dependiendo del contexto
-        self.show_main_page()
 
     def calcular_datos(self, dias, ventas, costo_ventas, costo_obrero, total_dias):
         data = []
@@ -276,8 +269,6 @@ class MyWindow(QMainWindow):
                                    beneficio_acumulado.copy()]
 
                 self.insertar_en_tabla(data[i % 2])
-
-
 
     def insertar_en_tabla(self, fila):
         # Obtiene el número de filas existentes en la tabla. ya que esta funcion puede ser llamada con filas
@@ -407,11 +398,6 @@ class MyWindow(QMainWindow):
         self.backButton = QPushButton("Volver", self)
         self.backButton.setGeometry(350, 540, 100, 30)
         self.backButton.clicked.connect(self.show_main_page)
-
-        self.backButton.setAutoDefault(True)
-        self.backButton.setDefault(False)
-        self.backButton.setFocusPolicy(Qt.StrongFocus)
-        self.backButton.clicked.connect(self.simular_action2)
 
         font = QFont()
         font.setPointSize(11)
