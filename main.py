@@ -4,7 +4,6 @@ from random import random
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QVBoxLayout, QLabel, \
     QLineEdit, QHBoxLayout, QWidget, QMessageBox, QHeaderView, QLayout, QSizePolicy, QSpacerItem
-
 from PyQt5.QtCore import Qt
 
 
@@ -21,8 +20,6 @@ class MyWindow(QMainWindow):
         self.inicial_fila_desde = "10"
         self.valores_tabla_iniciales = ["36", "38", "19", "6", "1", "0"]
         self.init_main_window()
-
-
 
         # Guarda los valores iniciales de los campos de entrada
         self.initial_values = {
@@ -104,17 +101,6 @@ class MyWindow(QMainWindow):
         self.costo_obrero_input.returnPressed.connect(self.simular_action)
         self.filas_mostrar_input.returnPressed.connect(self.simular_action)
         self.fila_desde_input.returnPressed.connect(self.simular_action)
-
-        # Conectar el evento returnPressed de los botones a las funciones correspondientes
-        self.pushButton.setAutoDefault(True)
-        self.pushButton.setDefault(False)
-        self.pushButton.setFocusPolicy(Qt.StrongFocus)
-        self.pushButton.clicked.connect(self.simular_action)
-
-        self.cancelButton.setAutoDefault(True)
-        self.cancelButton.setDefault(False)
-        self.cancelButton.setFocusPolicy(Qt.StrongFocus)
-        self.cancelButton.clicked.connect(self.cancel_action)
 
         self.pushButton.setFont(font)
         self.cancelButton.setFont(font)
@@ -348,9 +334,9 @@ class MyWindow(QMainWindow):
         # Validación de fila_desde
 
         fila_desde = int(fila_desde_text)
-        if fila_desde < 0 or fila_desde > dias - filas_mostrar + 1:
+        if fila_desde < 0 or fila_desde > dias - filas_mostrar:
             QMessageBox.warning(self, 'Valor inválido',
-                                'El número de fila desde debe estar entre 0 y {}.'.format(dias - filas_mostrar + 1))
+                                'El número de fila desde debe estar entre 0 y {}.'.format(dias - filas_mostrar))
             return
 
 
@@ -415,14 +401,6 @@ class MyWindow(QMainWindow):
 
     def show_main_page(self):
         self.init_main_window()
-
-    def reset_input_fields(self):
-        # Restablece los campos de entrada borrando su contenido si los objetos QLineEdit aún existen
-        self.dias_input.setText('')
-        self.ventas_input.setText('')
-        self.costo_ventas_input.setText('')
-        self.costo_obrero_input.setText('')
-        self.filas_mostrar_input.setText('')
 
 
 if __name__ == "__main__":
