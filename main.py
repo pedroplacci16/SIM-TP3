@@ -207,28 +207,6 @@ class MyWindow(QMainWindow):
     def simular_action(self):
         # Realizar la acción de simulación o cerrar la ventana, dependiendo del contexto
         self.show_second_page()
-
-
-    def calcular_datos(self, dias, ventas, costo_ventas, costo_obrero, total_dias):
-        data = []
-        beneficio_acumulado = [0, 0, 0]  # Inicializamos beneficio_acumulado con tres ceros
-        for i in range(dias):
-            rnd = round(random(), 2)
-            ausentes = self.calcular_ausentes(total_dias, rnd)
-            nomina = [max(0, 21 - ausentes), max(0, 22 - ausentes), max(0, 23 - ausentes)]
-            ventas_dia = [0, 0, 0]
-            costos_produccion_dia = [0, 0, 0]
-            for numero_nomina in range(len(nomina)):
-                if nomina[numero_nomina] >= 20:
-                    ventas_dia[numero_nomina] = ventas
-                    costos_produccion_dia[numero_nomina] = costo_ventas
-            salario = [x * costo_obrero for x in [21, 22, 23]]
-            beneficio = [0, 0, 0]
-            for j in range(3):
-                beneficio[j] = ventas_dia[j] - costos_produccion_dia[j] - salario[j]
-                beneficio_acumulado[j] += beneficio[j]  # Acumulamos el beneficio
-            data.append([i+1, rnd, ausentes, nomina, ventas_dia, costos_produccion_dia, salario, beneficio_acumulado.copy()])
-        return data
     
     def mostrar_datos(self, dias, ventas, costo_ventas, costo_obrero, total_dias, filas_mostrar, fila_desde):
         data = [[0]*8, [0]*8]  # Inicializamos data con dos elementos
